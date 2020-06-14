@@ -1,0 +1,96 @@
+--- a/dwm.c
++++ b/dwm.c
+@@ -160,14 +160,12 @@
+ static void destroynotify(XEvent *e);
+ static void detach(Client *c);
+ static void detachstack(Client *c);
+-static Monitor *dirtomon(int dir);
+ static void drawbar(Monitor *m);
+ static void drawbars(void);
+ static void enternotify(XEvent *e);
+ static void expose(XEvent *e);
+ static void focus(Client *c);
+ static void focusin(XEvent *e);
+-static void focusmon(const Arg *arg);
+ static void focusstack(const Arg *arg);
+ static int getrootptr(int *x, int *y);
+ static long getstate(Window w);
+@@ -207,7 +205,6 @@
+ static void sigchld(int unused);
+ static void spawn(const Arg *arg);
+ static void tag(const Arg *arg);
+-static void tagmon(const Arg *arg);
+ static void tile(Monitor *);
+ static void togglebar(const Arg *arg);
+ static void togglefloating(const Arg *arg);
+@@ -677,21 +674,6 @@
+ 	}
+ }
+ 
+-Monitor *
+-dirtomon(int dir)
+-{
+-	Monitor *m = NULL;
+-
+-	if (dir > 0) {
+-		if (!(m = selmon->next))
+-			m = mons;
+-	} else if (selmon == mons)
+-		for (m = mons; m->next; m = m->next);
+-	else
+-		for (m = mons; m->next != selmon; m = m->next);
+-	return m;
+-}
+-
+ void
+ drawbar(Monitor *m)
+ {
+@@ -816,20 +798,6 @@
+ }
+ 
+ void
+-focusmon(const Arg *arg)
+-{
+-	Monitor *m;
+-
+-	if (!mons->next)
+-		return;
+-	if ((m = dirtomon(arg->i)) == selmon)
+-		return;
+-	unfocus(selmon->sel, 0);
+-	selmon = m;
+-	focus(NULL);
+-}
+-
+-void
+ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
+@@ -1661,14 +1629,6 @@
+ }
+ 
+ void
+-tagmon(const Arg *arg)
+-{
+-	if (!selmon->sel || !mons->next)
+-		return;
+-	sendmon(selmon->sel, dirtomon(arg->i));
+-}
+-
+-void
+ tile(Monitor *m)
+ {
+ 	unsigned int i, n, h, mw, my, ty;
+--- a/config.mk
++++ b/config.mk
+@@ -11,8 +11,8 @@
+ X11LIB = /usr/X11R6/lib
+ 
+ # Xinerama, comment if you don't want it
+-XINERAMALIBS  = -lXinerama
+-XINERAMAFLAGS = -DXINERAMA
++#XINERAMALIBS  = -lXinerama
++#XINERAMAFLAGS = -DXINERAMA
+ 
+ # freetype
+ FREETYPELIBS = -lfontconfig -lXft
